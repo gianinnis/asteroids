@@ -1,7 +1,7 @@
 import pygame
-from circleshape import CircleShape
-from shot import Shot
-from constants import *
+from src.entities.circleshape import CircleShape
+from src.entities.shot import Shot
+from src.config.constants import *
 
 class Player(CircleShape):
 
@@ -9,6 +9,8 @@ class Player(CircleShape):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 180
         self.cooldown = 0
+        self.lives = 3
+        self.diamonds = 0
 
     def triangle(self) -> list[pygame.Vector2]:
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -39,6 +41,7 @@ class Player(CircleShape):
         self.position = pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
         self.rotation = 180
         self.cooldown = 0
+        self.lives = 3
 
     def rotate(self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt

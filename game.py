@@ -1,4 +1,4 @@
-from game_state_enum import GameState
+from src.config.enums.game_state_enum import GameState
 
 class Game:
     def __init__(self):

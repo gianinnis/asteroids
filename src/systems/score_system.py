@@ -1,7 +1,7 @@
 import pygame
-from constants import *
+from src.config.constants import *
 
-class ScoreManager:
+class ScoreSystem:
     def __init__(self, filename="highscore.txt"):
         self.filename = filename
         self.score = 0

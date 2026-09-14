@@ -1,17 +1,22 @@
 import pygame
 import sys
-from constants import *
-from logger import log_state, log_event
-from player import Player
-from asteroidfield import AsteroidField
-from asteroid import Asteroid
-from shot import Shot
-from score_manager import ScoreManager
 from game import Game
-from game_state_enum import *
+from logger import log_state, log_event
+from src.config.constants import *
+from src.config.enums.game_state_enum import *
+from src.entities.player import Player
+from src.entities.asteroid import Asteroid
+from src.entities.shot import Shot
+from src.entities.diamond import Diamond
+from src.systems.spawn_system import SpawnSystem
+from src.systems.score_system import ScoreSystem
+import time
 
 def main():
+    start = time.time()
+    print("Imports done:", time.time() - start)
     pygame.init()
+    print("pygame initialized:", time.time() - start)
 
     print(f"Starting Asteroids with pygame version: {pygame.version.ver}")
     print(f"Screen width: {SCREEN_WIDTH}")
@@ -29,17 +34,20 @@ def main():
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
     shots = pygame.sprite.Group()
+    diamonds = pygame.sprite.Group()
 
     Asteroid.containers = (asteroids, updatable, drawable)
     Player.containers = (updatable, drawable)
-    AsteroidField.containers = (updatable)
+    SpawnSystem.containers = (updatable)
     Shot.containers = (shots, updatable, drawable)
+    Diamond.containers = (diamonds, updatable, drawable)
 
-    asteroidfield = AsteroidField()
-    score_manager = ScoreManager()
+    spawn_system = SpawnSystem()
+    score_manager = ScoreSystem()
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     game = Game()
 
+    print("Setup done:", time.time() - start)
     while True:
         log_state()
 
@@ -74,17 +82,29 @@ def main():
         if game.state == GameState.PLAYING:
             updatable.update(dt)
 
+            if player.lives <= 0:
+                print("Game over!")
+                game.over()
+
             for asteroid in asteroids:
                 if asteroid.collides_with(player):
                     log_event("player_hit")
-                    print("Game over!")
-                    game.over()
+                    asteroid.kill()
+                    player.lives -= 1
+                    print(f"Lives left: {player.lives}")
+                    
                 for shot in shots:
                     if shot.collides_with(asteroid):
                         log_event("asteroid_shot")
                         shot.kill()
                         score_manager.add_points(asteroid.points)
                         asteroid.split()
+
+            for diamond in diamonds:
+                if diamond.collides_with(player):
+                    diamond.kill()
+                    player.diamonds += 1
+                    print(f"Diamonds: {player.diamonds}")
 
         # DRAWING PHASE
         if game.state == GameState.TITLE:

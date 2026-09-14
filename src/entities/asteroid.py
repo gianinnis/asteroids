@@ -1,8 +1,8 @@
 import pygame
-from circleshape import CircleShape
-from constants import *
-from logger import log_event
 import random
+from logger import log_event
+from src.entities.circleshape import CircleShape
+from src.config.constants import *
 
 
 
