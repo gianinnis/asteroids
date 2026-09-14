@@ -29,3 +29,11 @@ class Asteroid(CircleShape):
         second_asteroid = Asteroid(self.position.x, self.position.y, new_radius)
         first_asteroid.velocity = first_vector * 1.2
         second_asteroid.velocity = second_vector * 1.2
+
+    @property
+    def points(self):
+        if self.radius <= ASTEROID_MIN_RADIUS:
+            return 200
+        if self.radius >= ASTEROID_MAX_RADIUS:
+            return 50
+        return 100
